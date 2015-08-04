@@ -12,7 +12,7 @@ var mycounterbalance = counterbalance;  // they tell you which condition you hav
 
 var num_words_studied = 20;
 var list_repetitions = 2;
-var time_per_stimulus = 3000; 
+var time_per_stimulus = 3000;
 var IMG_DIR = "static/images/objects/";
 
 // All pages to be loaded
@@ -27,7 +27,7 @@ var pages = [
 
 psiTurk.preloadPages(pages);
 
-var instructionPages = [ 
+var instructionPages = [
 	"instructions/instruct-1.html",
 	"instructions/instruct-ready.html"
 ];
@@ -39,7 +39,7 @@ var testInstructions = [
 var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
 // database.push('User ' + name + ' says ' + text);
 // database.push({name: name, text: text});
-// callback to let us know when a new message is added: database.on('child_added', function(snapshot) {  
+// callback to let us know when a new message is added: database.on('child_added', function(snapshot) {
 //	var msg = snapshot.val();
 //	doSomething(msg.name, msg.text);
 // });
@@ -47,9 +47,9 @@ var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
 /********************
 * HTML manipulation
 *
-* All HTML files in the templates directory are requested 
+* All HTML files in the templates directory are requested
 * from the server when the PsiTurk object is created above. We
-* need code to get those pages from the PsiTurk object and 
+* need code to get those pages from the PsiTurk object and
 * insert them into the document.
 *
 ********************/
@@ -59,12 +59,12 @@ var Experiment = function() {
 	var wordon, // time word is presented
 	    listening = false;
 
-	var VERBAL_STIM = ["gasser", "coro", "plib", "bosa", "habble", "pumbi", "kaki", "regli", "permi", 
-		"gaso", "toma", "setar", "temi", "menick", "gosten", "fema", "gheck", "lanty", "ragol", "gelom", 
-		"feek", "rery", "galad", "bofe", "prino", "lano", "detee", "grup", "heca", "spati", "gidi", "pid", 
-		"bispit", "ceff", "netu", "mapoo", "colat", "patost", "rofe", "fofi", "molick", "spiczan", "slovy", 
-		"manu", "poda", "dorf", "vindi", "kupe", "nibo", "wug", "badu", "amma", "ghettle", "kala", "belmi", 
-		"lurf", "blug", "poove", "spret", "hoft", "prew", "nicote", "sanny", "jeba", "embo", "fexo", "woby", 
+	var VERBAL_STIM = ["gasser", "coro", "plib", "bosa", "habble", "pumbi", "kaki", "regli", "permi",
+		"gaso", "toma", "setar", "temi", "menick", "gosten", "fema", "gheck", "lanty", "ragol", "gelom",
+		"feek", "rery", "galad", "bofe", "prino", "lano", "detee", "grup", "heca", "spati", "gidi", "pid",
+		"bispit", "ceff", "netu", "mapoo", "colat", "patost", "rofe", "fofi", "molick", "spiczan", "slovy",
+		"manu", "poda", "dorf", "vindi", "kupe", "nibo", "wug", "badu", "amma", "ghettle", "kala", "belmi",
+		"lurf", "blug", "poove", "spret", "hoft", "prew", "nicote", "sanny", "jeba", "embo", "fexo", "woby",
 		"dilla", "arly", "zear", "luli", "grum"]; // 72 words -- not matched to voiced stimuli
 
 	var images = [];
@@ -73,7 +73,7 @@ var Experiment = function() {
 	}
 
 	objs = _.shuffle(images)
-	words = _.shuffle(VERBAL_STIM); 
+	words = _.shuffle(VERBAL_STIM);
 
 	var stimuli = []; // take first N
 	for(i = 0; i<num_words_studied; i++) {
@@ -115,7 +115,7 @@ var Experiment = function() {
     		function() { currentview = new Test(stimuli); } // what you want to do when you are done with instructions
     	);
 	};
-	
+
 	var show_stim = function(stim, time) {
 		//console.log(stim);
 		var svg = d3.select("#visual_stim")
@@ -133,7 +133,7 @@ var Experiment = function() {
       		.attr("width",120)
       		.attr("height",120)
       		.style("opacity",1);
-		
+
 		svg.selectAll("text")
 			.data(stim)
 			.enter()
@@ -147,7 +147,7 @@ var Experiment = function() {
 			.style("margin","20px")
 			.text(function(d,i) { return d.word; });
 
-		setTimeout(function() { 
+		setTimeout(function() {
 			remove_stim();
 			next();
 		}, time);
@@ -193,7 +193,7 @@ var Test = function(stimuli) {
 
 		var rectGrid = d3.layout.grid()
     		.bands()
-    		.nodeSize([100, 100]) 
+    		.nodeSize([100, 100])
     		.padding([20, 20]); // padding is absolute if nodeSize is used
     		// .size([100,100])
 
@@ -201,14 +201,14 @@ var Test = function(stimuli) {
 			.attr({
 				width: 1024,
 				height: 768
-			}) 
+			})
 			.attr("id", "objArray")
 			.append("g")
 			.attr("transform", "translate(50,40)");
 
 		var rect = objs.selectAll(".rect")
-			.data(rectGrid(all_objs)); 
-		
+			.data(rectGrid(all_objs));
+
 		//console.log(rect);
 
 		rect.enter().append("image")
@@ -227,7 +227,7 @@ var Test = function(stimuli) {
 				}
 				var rt = new Date().getTime() - wordon;
 
-				var dat = {'phase':"TEST", 'word':stim.word, 'studied':stim.studied, 'correctAns':stim.obj,
+				var dat = {'condition':condition, 'phase':"TEST", 'word':stim.word, 'studied':stim.studied, 'correctAns':stim.obj,
 					'response':d.obj, 'correct':correct, 'rt':rt};
 				console.log(dat);
 				psiTurk.recordTrialData(dat);
@@ -264,50 +264,51 @@ function getRandomSubarray(arr, size) {
 
 var Questionnaire = function() {
 	var error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
-	
+
 	record_responses = function() {
 		psiTurk.recordTrialData({'phase':'postquestionnaire', 'status':'submit'});
 		$('textarea').each( function(i, val) {
 			psiTurk.recordUnstructuredData(this.id, this.value);
 		});
 		$('select').each( function(i, val) {
-			psiTurk.recordUnstructuredData(this.id, this.value);		
+			psiTurk.recordUnstructuredData(this.id, this.value);
 		});
 	};
 
 	prompt_resubmit = function() {
-		psiTurk.replaceBody(error_message); // d3.select("body")
+		document.body.innerHTML = error_message; // d3.select("body")
 		$("#resubmit").click(resubmit);
 	};
 
 	resubmit = function() {
-		psiTurk.replaceBody("<h1>Trying to resubmit...</h1>");
+		document.body.innerHTML = "<h1>Trying to resubmit...</h1>";
 		reprompt = setTimeout(prompt_resubmit, 10000);
-		
+
 		psiTurk.saveData({
 			success: function() {
-			    clearInterval(reprompt); 
-                psiTurk.computeBonus('compute_bonus', function(){finish()}); 
-			}, 
+			    clearInterval(reprompt);
+                psiTurk.computeBonus('compute_bonus', function(){}); // was finish()
+			},
 			error: prompt_resubmit
 		});
 	};
 
-	// Load the questionnaire snippet 
+
+	// Load the questionnaire snippet
 	psiTurk.showPage('postquestionnaire.html');
 	psiTurk.recordTrialData({'phase':'postquestionnaire', 'status':'begin'});
-	
+
 	$("#next").click(function () {
 	    record_responses();
 	    psiTurk.saveData({
             success: function(){
-                psiTurk.computeBonus('compute_bonus', function() { 
+                psiTurk.computeBonus('compute_bonus', function() {
                 	psiTurk.completeHIT(); // when finished saving compute bonus, the quit
-                }); 
-            }, 
+                });
+            },
             error: prompt_resubmit});
 	});
-    	
+
 };
 
 // Task object to keep track of the current phase
