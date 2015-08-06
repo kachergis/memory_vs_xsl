@@ -22,7 +22,8 @@ var pages = [
 	"instructions/instruct-ready.html",
 	"instructions/instruct-test.html",
 	"stage.html",
-	"postquestionnaire.html"
+	"postquestionnaire.html",
+	"debriefing.html"
 ];
 
 psiTurk.preloadPages(pages);
@@ -231,6 +232,8 @@ var Test = function(stimuli) {
 					'response':d.obj, 'correct':correct, 'rt':rt};
 				console.log(dat);
 				psiTurk.recordTrialData(dat);
+				dat.uniqueId = uniqueId;
+				database.push(dat);
 				remove_stim();
 				next();
 			});
@@ -287,7 +290,11 @@ var Questionnaire = function() {
 		psiTurk.saveData({
 			success: function() {
 			    clearInterval(reprompt);
-                psiTurk.computeBonus('compute_bonus', function(){}); // was finish()
+                //psiTurk.computeBonus('compute_bonus', function(){}); // was finish()
+								psiTurk.doInstructions(
+						    	["debriefing.html"], // a list of pages you want to display in sequence
+						    	function() { psiTurk.completeHIT(); } // what you want to do when you are done with instructions
+						    );
 			},
 			error: prompt_resubmit
 		});
@@ -302,9 +309,12 @@ var Questionnaire = function() {
 	    record_responses();
 	    psiTurk.saveData({
             success: function(){
-                psiTurk.computeBonus('compute_bonus', function() {
-                	psiTurk.completeHIT(); // when finished saving compute bonus, the quit
-                });
+                //psiTurk.computeBonus('compute_bonus', function() {
+								psiTurk.doInstructions(
+						    	["debriefing.html"], // a list of pages you want to display in sequence
+						    	function() { psiTurk.completeHIT(); } // what you want to do when you are done with instructions
+						    );
+                //});
             },
             error: prompt_resubmit});
 	});
