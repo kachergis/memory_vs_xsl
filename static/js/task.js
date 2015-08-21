@@ -156,8 +156,8 @@ var Experiment = function() {
 		}
 	};
 
-	var show_stim = function(stim, time) {
-		record_study_trial(stim)
+	var show_stim = function(stim, time, wordon) {
+		record_study_trial(stim, time, wordon)
 		//console.log(stim);
 		var svg = d3.select("#visual_stim")
 			.append("svg")
