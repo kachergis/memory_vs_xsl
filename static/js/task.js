@@ -10,9 +10,13 @@ var psiTurk = PsiTurk(uniqueId, adServerLoc);
 var mycondition = condition;  // these two variables are passed by the psiturk server process
 var mycounterbalance = counterbalance;  // they tell you which condition you have been assigned to
 
-var num_words_studied = 20;
-var list_repetitions = 2;
+var condition_name = "";
+var num_words_studied = 18;
+var list_repetitions = 4;
 var time_per_stimulus = 3000;
+var total_time = num_words_studied*list_repetitions*time_per_stimulus/1000;
+console.log("study period duration: "+total_time);
+
 var IMG_DIR = "static/images/objects/";
 
 // All pages to be loaded
@@ -36,7 +40,7 @@ var testInstructions = [
 	"instructions/instruct-test.html"
 ];
 
-//var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
+var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
 //var dbref = newFirebase('https://memory-vs-xsl1.firebaseio.com/');
 //var database = dbref.child("subjects");
 // database.push({name: name, text: text});
@@ -60,6 +64,25 @@ var Experiment = function() {
 	var wordon, // time word is presented
 	    listening = false;
 
+	var pairs_per_trial = 0;
+	var shuffle_trials = false;
+	if(mycondition===0) {
+		pairs_per_trial = 1;
+		condition_name = "1pair_noshuffle";
+	} else if(mycondition===1) {
+		pairs_per_trial = 1;
+		condition_name = "2pair_noshuffle";
+	} else if(mycondition===2) {
+		pairs_per_trial = 1;
+		condition_name = "1pair_shuffle";
+		shuffle_trials = true
+	} else if(mycondition===3) {
+		pairs_per_trial = 2;
+		condition_name = "2pair_shuffle";
+		shuffle_trials = true;
+	}
+	console.log("mycondition: "+mycondition+" condition_name: "+condition_name + " pairs_per_trial: "+pairs_per_trial);
+
 	var VERBAL_STIM = ["gasser", "coro", "plib", "bosa", "habble", "pumbi", "kaki", "regli", "permi",
 		"gaso", "toma", "setar", "temi", "menick", "gosten", "fema", "gheck", "lanty", "ragol", "gelom",
 		"feek", "rery", "galad", "bofe", "prino", "lano", "detee", "grup", "heca", "spati", "gidi", "pid",
@@ -78,13 +101,19 @@ var Experiment = function() {
 
 	var stimuli = []; // take first N
 	for(i = 0; i<num_words_studied; i++) {
-		stimuli.push({"word":words[i], "obj":objs[i], "studied":list_repetitions, ""});
+		stimuli.push({"word":words[i], "obj":objs[i], "studied":list_repetitions});
 	}
 
 	var trials = [];
+	var index = 1;
 	for(m = 0; m<list_repetitions; m++) {
+		if(shuffle_trials) { // shuffle each batch of repetitions
+			stimuli = _.shuffle(stimuli);
+		}
 		for(i = 0; i<stimuli.length; i++) {
+			stimuli[i].index = index;
 			trials.push(stimuli[i]);
+			index += 1;
 		}
 	}
 
@@ -96,16 +125,14 @@ var Experiment = function() {
 		}
 		else {
 			var stim = [trials.shift()];
-			if(mycondition===1) { // 1 per trial
-				var condition_name = "1pair";
+			if(pairs_per_trial===1) { // 1 per trial
 				var time = time_per_stimulus;
-			} else {
+			} else if(pairs_per_trial===2) {
 				stim.push(trials.shift());
-				var condition_name = "2pairs";
 				var time = time_per_stimulus*2;
 			}
-			show_stim( stim, time );
 			wordon = new Date().getTime();
+			show_stim( stim, time, wordon );
 		}
 	};
 
@@ -119,7 +146,18 @@ var Experiment = function() {
     	);
 	};
 
+	var record_study_trial = function(stim, time, wordon) {
+		for(var i = 0; i < stim.length; i++) {
+			var dat = {'uniqueId':uniqueId, 'condition':condition_name, 'phase':"STUDY", 'index':stim[i].index,
+				'word':stim[i].word, 'obj':stim[i].obj, 'duration':time, 'timestamp':wordon};
+			console.log(dat);
+			//psiTurk.recordTrialData(dat);
+			database.push(dat);
+		}
+	};
+
 	var show_stim = function(stim, time) {
+		record_study_trial(stim)
 		//console.log(stim);
 		var svg = d3.select("#visual_stim")
 			.append("svg")
@@ -242,6 +280,8 @@ var Test = function(stimuli) {
 			});
 
 	};
+
+	//var record_test_trial = function() { }
 
 	var remove_stim = function() {
 		d3.select("svg").remove();
