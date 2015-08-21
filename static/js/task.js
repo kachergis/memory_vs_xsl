@@ -22,8 +22,7 @@ var pages = [
 	"instructions/instruct-ready.html",
 	"instructions/instruct-test.html",
 	"stage.html",
-	"postquestionnaire.html",
-	"debriefing.html"
+	"postquestionnaire.html"
 ];
 
 psiTurk.preloadPages(pages);
@@ -37,8 +36,9 @@ var testInstructions = [
 	"instructions/instruct-test.html"
 ];
 
-var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
-// database.push('User ' + name + ' says ' + text);
+//var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
+//var dbref = newFirebase('https://memory-vs-xsl1.firebaseio.com/');
+//var database = dbref.child("subjects");
 // database.push({name: name, text: text});
 // callback to let us know when a new message is added: database.on('child_added', function(snapshot) {
 //	var msg = snapshot.val();
@@ -78,7 +78,7 @@ var Experiment = function() {
 
 	var stimuli = []; // take first N
 	for(i = 0; i<num_words_studied; i++) {
-		stimuli.push({"word":words[i], "obj":objs[i], "studied":list_repetitions});
+		stimuli.push({"word":words[i], "obj":objs[i], "studied":list_repetitions, ""});
 	}
 
 	var trials = [];
@@ -97,9 +97,11 @@ var Experiment = function() {
 		else {
 			var stim = [trials.shift()];
 			if(mycondition===1) { // 1 per trial
+				var condition_name = "1pair";
 				var time = time_per_stimulus;
 			} else {
 				stim.push(trials.shift());
+				var condition_name = "2pairs";
 				var time = time_per_stimulus*2;
 			}
 			show_stim( stim, time );
@@ -228,11 +230,12 @@ var Test = function(stimuli) {
 				}
 				var rt = new Date().getTime() - wordon;
 
-				var dat = {'condition':condition, 'phase':"TEST", 'word':stim.word, 'studied':stim.studied, 'correctAns':stim.obj,
-					'response':d.obj, 'correct':correct, 'rt':rt};
+				var dat = {'condition':condition_name, 'phase':"TEST", 'word':stim.word, 'studied':stim.studied, 'correctAns':stim.obj,
+					'response':d.obj, 'correct':correct, 'rt':rt}; // 'studyIndices':stim.studyIndices -- somehow record study...
 				console.log(dat);
 				psiTurk.recordTrialData(dat);
 				dat.uniqueId = uniqueId;
+				dat.timestamp = wordon;
 				database.push(dat);
 				remove_stim();
 				next();
@@ -291,10 +294,7 @@ var Questionnaire = function() {
 			success: function() {
 			    clearInterval(reprompt);
                 //psiTurk.computeBonus('compute_bonus', function(){}); // was finish()
-								psiTurk.doInstructions(
-						    	["debriefing.html"], // a list of pages you want to display in sequence
-						    	function() { psiTurk.completeHIT(); } // what you want to do when you are done with instructions
-						    );
+								psiTurk.completeHIT();
 			},
 			error: prompt_resubmit
 		});
@@ -310,11 +310,7 @@ var Questionnaire = function() {
 	    psiTurk.saveData({
             success: function(){
                 //psiTurk.computeBonus('compute_bonus', function() {
-								psiTurk.doInstructions(
-						    	["debriefing.html"], // a list of pages you want to display in sequence
-						    	function() { psiTurk.completeHIT(); } // what you want to do when you are done with instructions
-						    );
-                //});
+						    psiTurk.completeHIT();
             },
             error: prompt_resubmit});
 	});
