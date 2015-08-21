@@ -66,17 +66,17 @@ var Experiment = function() {
 
 	var pairs_per_trial = 0;
 	var shuffle_trials = false;
-	if(mycondition===0) {
+	if(mycondition==="0") {
 		pairs_per_trial = 1;
 		condition_name = "1pair_noshuffle";
-	} else if(mycondition===1) {
+	} else if(mycondition==="1") {
 		pairs_per_trial = 1;
 		condition_name = "2pair_noshuffle";
-	} else if(mycondition===2) {
+	} else if(mycondition==="2") {
 		pairs_per_trial = 1;
 		condition_name = "1pair_shuffle";
-		shuffle_trials = true
-	} else if(mycondition===3) {
+		shuffle_trials = true;
+	} else if(mycondition==="3") {
 		pairs_per_trial = 2;
 		condition_name = "2pair_shuffle";
 		shuffle_trials = true;
@@ -125,13 +125,16 @@ var Experiment = function() {
 		}
 		else {
 			var stim = [trials.shift()];
+			var time;
 			if(pairs_per_trial===1) { // 1 per trial
-				var time = time_per_stimulus;
+				time = time_per_stimulus;
 			} else if(pairs_per_trial===2) {
 				stim.push(trials.shift());
-				var time = time_per_stimulus*2;
+				time = time_per_stimulus*2;
 			}
 			wordon = new Date().getTime();
+			console.log(pairs_per_trial);
+			console.log(stim);
 			show_stim( stim, time, wordon );
 		}
 	};
@@ -157,7 +160,7 @@ var Experiment = function() {
 	};
 
 	var show_stim = function(stim, time, wordon) {
-		record_study_trial(stim, time, wordon)
+		record_study_trial(stim, time, wordon);
 		//console.log(stim);
 		var svg = d3.select("#visual_stim")
 			.append("svg")
