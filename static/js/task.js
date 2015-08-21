@@ -70,7 +70,7 @@ var Experiment = function() {
 		pairs_per_trial = 1;
 		condition_name = "1pair_noshuffle";
 	} else if(mycondition==="1") {
-		pairs_per_trial = 1;
+		pairs_per_trial = 2;
 		condition_name = "2pair_noshuffle";
 	} else if(mycondition==="2") {
 		pairs_per_trial = 1;
@@ -101,19 +101,19 @@ var Experiment = function() {
 
 	var stimuli = []; // take first N
 	for(i = 0; i<num_words_studied; i++) {
-		stimuli.push({"word":words[i], "obj":objs[i], "studied":list_repetitions});
+		stimuli.push({"word":words[i], "obj":objs[i], "studied":list_repetitions, "index":[]});
 	}
 
 	var trials = [];
-	var index = 1;
+	var study_index = 1;
 	for(m = 0; m<list_repetitions; m++) {
 		if(shuffle_trials) { // shuffle each batch of repetitions
 			stimuli = _.shuffle(stimuli);
 		}
 		for(i = 0; i<stimuli.length; i++) {
-			stimuli[i].index = index;
+			stimuli[i].index.push(study_index);
 			trials.push(stimuli[i]);
-			index += 1;
+			study_index += 1;
 		}
 	}
 
@@ -133,8 +133,7 @@ var Experiment = function() {
 				time = time_per_stimulus*2;
 			}
 			wordon = new Date().getTime();
-			console.log(pairs_per_trial);
-			console.log(stim);
+
 			show_stim( stim, time, wordon );
 		}
 	};
@@ -153,8 +152,8 @@ var Experiment = function() {
 		for(var i = 0; i < stim.length; i++) {
 			var dat = {'uniqueId':uniqueId, 'condition':condition_name, 'phase':"STUDY", 'index':stim[i].index,
 				'word':stim[i].word, 'obj':stim[i].obj, 'duration':time, 'timestamp':wordon};
-			console.log(dat);
-			//psiTurk.recordTrialData(dat);
+			//console.log(dat);
+			psiTurk.recordTrialData(dat);
 			database.push(dat);
 		}
 	};
@@ -273,7 +272,7 @@ var Test = function(stimuli) {
 
 				var dat = {'condition':condition_name, 'phase':"TEST", 'word':stim.word, 'studied':stim.studied, 'correctAns':stim.obj,
 					'response':d.obj, 'correct':correct, 'rt':rt}; // 'studyIndices':stim.studyIndices -- somehow record study...
-				console.log(dat);
+				//console.log(dat);
 				psiTurk.recordTrialData(dat);
 				dat.uniqueId = uniqueId;
 				dat.timestamp = wordon;
