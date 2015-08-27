@@ -40,7 +40,8 @@ var testInstructions = [
 	"instructions/instruct-test.html"
 ];
 
-var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
+var database = new Firebase('https://memory-vs-xsl1.firebaseio.com/');
+//var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
 //var dbref = newFirebase('https://memory-vs-xsl1.firebaseio.com/');
 //var database = dbref.child("subjects");
 // database.push({name: name, text: text});
@@ -148,10 +149,10 @@ var Experiment = function() {
     	);
 	};
 
-	var record_study_trial = function(stim, time, wordon) {
+	var record_study_trial = function(stim, time, wordon, key) {
 		for(var i = 0; i < stim.length; i++) {
 			var dat = {'uniqueId':uniqueId, 'condition':condition_name, 'phase':"STUDY", 'index':stim[i].index,
-				'word':stim[i].word, 'obj':stim[i].obj, 'duration':time, 'timestamp':wordon};
+				'word':stim[i].word, 'obj':stim[i].obj, 'duration':time, 'timestamp':wordon, 'keycode':key};
 			//console.log(dat);
 			psiTurk.recordTrialData(dat);
 			database.push(dat);
@@ -159,7 +160,14 @@ var Experiment = function() {
 	};
 
 	var show_stim = function(stim, time, wordon) {
-		record_study_trial(stim, time, wordon);
+		var recorded_flag = false;
+		d3.select("body").on("keydown", function() {
+			// 32 is space but let's record everything
+			//if(d3.event.keyCode === 32) {	}
+			record_study_trial(stim, time, wordon, d3.event.keyCode);
+			recorded_flag = true;
+		});
+
 		//console.log(stim);
 		var svg = d3.select("#visual_stim")
 			.append("svg")
@@ -191,6 +199,9 @@ var Experiment = function() {
 			.text(function(d,i) { return d.word; });
 
 		setTimeout(function() {
+			if(!recorded_flag) { // record once if no keys were pressed
+				record_study_trial(stim, time, wordon, -1);
+			}
 			remove_stim();
 			next();
 		}, time);
