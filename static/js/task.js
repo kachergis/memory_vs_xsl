@@ -328,11 +328,11 @@ var Questionnaire = function() {
 		psiTurk.recordTrialData({'phase':'postquestionnaire', 'status':'submit'});
 		$('textarea').each( function(i, val) {
 			psiTurk.recordUnstructuredData(this.id, this.value);
-			database.push({'uniqueId':uniqueId, 'condition':condition_name, this.id:this.value});
+			database.push({'uniqueId':uniqueId, 'condition':condition_name, 'questionId':this.id, 'answer':this.value});
 		});
 		$('select').each( function(i, val) {
 			psiTurk.recordUnstructuredData(this.id, this.value);
-			database.push({'uniqueId':uniqueId, 'condition':condition_name, this.id:this.value});
+			database.push({'uniqueId':uniqueId, 'condition':condition_name, 'questionId':this.id, 'answer':this.value});
 		});
 	};
 
