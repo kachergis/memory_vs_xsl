@@ -326,14 +326,16 @@ var Questionnaire = function() {
 
 	record_responses = function() {
 		psiTurk.recordTrialData({'phase':'postquestionnaire', 'status':'submit'});
+		dat = {'uniqueId':uniqueId, 'condition':condition_name, 'phase':'postquestionnaire'};
 		$('textarea').each( function(i, val) {
 			psiTurk.recordUnstructuredData(this.id, this.value);
-			database.push({'uniqueId':uniqueId, 'condition':condition_name, 'questionId':this.id, 'answer':this.value});
+			dat[this.id] = this.value;
 		});
 		$('select').each( function(i, val) {
 			psiTurk.recordUnstructuredData(this.id, this.value);
-			database.push({'uniqueId':uniqueId, 'condition':condition_name, 'questionId':this.id, 'answer':this.value});
+			dat[this.id] = this.value;
 		});
+		database.push(dat);
 	};
 
 	prompt_resubmit = function() {
