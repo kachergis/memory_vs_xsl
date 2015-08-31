@@ -23,6 +23,11 @@ strong {
   color: #ccccff;
 }
 
+#visual_stim {
+  border: 1px solid #ccc;
+  padding-top: 40px;
+}
+
 
 /* these are all the same for now, but easy to modify individually */
 #container-ad, #container-error, #container-exp, #container-consent, #container-instructions, #container-questionnaire {

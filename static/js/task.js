@@ -254,7 +254,7 @@ var Test = function(stimuli) {
     	var objs = d3.select("#visual_stim").append("svg")
 			.attr({
 				width: 1024,
-				height: 768
+				height: 560
 			})
 			.attr("id", "objArray")
 			.append("g")
