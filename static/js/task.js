@@ -18,6 +18,11 @@ var total_time = num_words_studied*list_repetitions*time_per_stimulus/1000;
 console.log("study period duration: "+total_time);
 
 var IMG_DIR = "static/images/objects/";
+var IMAGE_FILES = [];
+
+for (var i = 1; i <= 72; i++) {
+		IMAGE_FILES.push(IMG_DIR+i+".jpg");
+}
 
 // All pages to be loaded
 var pages = [
@@ -28,6 +33,8 @@ var pages = [
 	"stage.html",
 	"postquestionnaire.html"
 ];
+
+psiTurk.preloadImages(IMAGE_FILES);
 
 psiTurk.preloadPages(pages);
 
@@ -203,12 +210,15 @@ var Experiment = function() {
 				record_study_trial(stim, time, wordon, -1);
 			}
 			remove_stim();
-			next();
+			setTimeout(function(){ next(); }, 500); // 500ms ISI
 		}, time);
 	};
 
 	var remove_stim = function() {
-		d3.select("svg").remove();
+		d3.select("svg")
+			.transition()
+			.style("opacity", 0)
+			.remove();
 	};
 
 	// Load the stage.html snippet into the body of the page
@@ -289,7 +299,7 @@ var Test = function(stimuli) {
 				dat.timestamp = wordon;
 				database.push(dat);
 				remove_stim();
-				next();
+				setTimeout(function(){ next(); }, 500);
 			});
 
 	};
