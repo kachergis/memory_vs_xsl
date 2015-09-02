@@ -13,9 +13,11 @@ var mycounterbalance = counterbalance;  // they tell you which condition you hav
 var condition_name = "";
 var num_words_studied = 18;
 var list_repetitions = 4;
-var time_per_stimulus = 3000;
-var total_time = num_words_studied*list_repetitions*time_per_stimulus/1000;
-console.log("study period duration: "+total_time);
+var time_per_stimulus = 2500; //3000;
+var total_time = num_words_studied*list_repetitions*(time_per_stimulus+500)/1000;
+console.log("study period duration: "+total_time); // now +500 ms
+// 3s per item +500ms ISI (uh oh--same in 1/trial and 2/trial cond) = ~3:50 (252s = 4.2min in theory..)
+// 2.5s should take 216 (3.6 min - 3:36
 
 var IMG_DIR = "static/images/objects/";
 var IMAGE_FILES = [];
@@ -90,7 +92,7 @@ var instructioncheck = function() {
 }
 
 var Experiment = function() {
-
+	var ISI = 500; // double this if 2 items per trial..
 	var wordon, // time word is presented
 	    listening = false;
 
@@ -100,6 +102,7 @@ var Experiment = function() {
 		pairs_per_trial = 1;
 		condition_name = "1pair_noshuffle";
 	} else if(mycondition==="1") {
+		ISI = 2*ISI;
 		pairs_per_trial = 2;
 		condition_name = "2pair_noshuffle";
 	} else if(mycondition==="2") {
@@ -107,6 +110,7 @@ var Experiment = function() {
 		condition_name = "1pair_shuffle";
 		shuffle_trials = true;
 	} else if(mycondition==="3") {
+		ISI = 2*ISI;
 		pairs_per_trial = 2;
 		condition_name = "2pair_shuffle";
 		shuffle_trials = true;
@@ -208,7 +212,7 @@ var Experiment = function() {
 			.enter()
 			.append("image")
       		.attr("xlink:href", function(d,i) { return IMG_DIR+d.obj+".jpg"; })
-      		.attr("x", function(d,i) { return i*200+60 })
+      		.attr("x", function(d,i) { return i*220+60 })
       		.attr("y", 10)
       		.attr("width",120)
       		.attr("height",120)
@@ -218,7 +222,7 @@ var Experiment = function() {
 			.data(stim)
 			.enter()
 			.append("text")
-			.attr("x", function(d,i) { return i*200+50; })
+			.attr("x", function(d,i) { return i*220+50; })
 			.attr("y",180)
 			.style("fill",'black')
 			.style("text-align","center")
@@ -232,15 +236,17 @@ var Experiment = function() {
 				record_study_trial(stim, time, wordon, -1);
 			}
 			remove_stim();
-			setTimeout(function(){ next(); }, 500); // 500ms ISI
-		}, time);
+			setTimeout(function(){ next(); }, ISI); // 500ms ISI
+		}, time); // time or time+ISI; ?
 	};
 
 	var remove_stim = function() {
-		d3.select("svg")
-			.transition()
-			.style("opacity", 0)
-			.remove();
+		d3.select("svg").remove();
+		// d3 transitions default to 250ms, and we probably don't want that fade..
+		// d3.select("svg")
+		// 	.transition()
+		// 	.style("opacity", 0)
+		// 	.remove();
 	};
 
 	// Load the stage.html snippet into the body of the page
@@ -321,7 +327,7 @@ var Test = function(stimuli) {
 				dat.timestamp = wordon;
 				dbtest.push(dat);
 				remove_stim();
-				setTimeout(function(){ next(); }, 500);
+				setTimeout(function(){ next(); }, 500); // always 500 ISI
 			});
 
 	};
