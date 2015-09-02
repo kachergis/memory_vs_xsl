@@ -27,7 +27,7 @@ for (var i = 1; i <= 72; i++) {
 // All pages to be loaded
 var pages = [
 	"instructions/instruct-1.html",
-	"instructions/instruct-2.html",
+	"instructions/instruct-quiz.html",
 	"instructions/instruct-ready.html",
 	"instructions/instruct-test.html",
 	"stage.html",
@@ -40,6 +40,7 @@ psiTurk.preloadPages(pages);
 
 var instructionPages = [
 	"instructions/instruct-1.html",
+	"instructions/instruct-quiz.html",
 	"instructions/instruct-ready.html"
 ];
 
@@ -48,10 +49,10 @@ var testInstructions = [
 ];
 
 var database = new Firebase('https://memory-vs-xsl1.firebaseio.com/');
-//var database = new Firebase('https://fiery-torch-5666.firebaseio.com/');
-//var dbref = newFirebase('https://memory-vs-xsl1.firebaseio.com/');
-//var database = dbref.child("subjects");
-// database.push({name: name, text: text});
+var dbstudy = database.child("study"); // store data from each phase separately
+var dbtest = database.child("test");
+var dbinstructq = database.child("instructquiz");
+var dbpostq = database.child("postquiz");
 // callback to let us know when a new message is added: database.on('child_added', function(snapshot) {
 //	var msg = snapshot.val();
 //	doSomething(msg.name, msg.text);
@@ -66,6 +67,27 @@ var database = new Firebase('https://memory-vs-xsl1.firebaseio.com/');
 * insert them into the document.
 *
 ********************/
+
+var instructioncheck = function() {
+	var corr = [0,0,0,0];
+	if (document.getElementById('icheck1').checked) {corr[0]=1;}
+	if (document.getElementById('icheck2').checked) {corr[1]=1;}
+	if (document.getElementById('icheck3').checked) {corr[2]=1;}
+	if (document.getElementById('icheck4').checked) {corr[3]=1;}
+	var checksum = corr.reduce(function(tot,num){ return tot+num }, 0);
+	console.log('instructquiz num_correct: ' + checksum);
+	psiTurk.recordTrialData({'phase':'instructquiz', 'status':'submit', 'num_correct':checksum});
+	var timestamp = new Date().getTime();
+	dat = {'uniqueId':uniqueId, 'condnum':mycondition, 'phase':'instructquiz', 'num_correct':checksum, 'time':timestamp};
+	dbinstructq.push(dat);
+
+	if (checksum===4){
+		document.getElementById("checkquiz").style.display = "none"; // hide the submit button
+		document.getElementById("instructquizcorrect").style.display = "inline"; // show the next button
+	} else {
+		alert('You have answered some of the questions wrong. Please re-read instructions and try again.');
+	}
+}
 
 var Experiment = function() {
 
@@ -162,7 +184,7 @@ var Experiment = function() {
 				'word':stim[i].word, 'obj':stim[i].obj, 'duration':time, 'timestamp':wordon, 'keycode':key};
 			//console.log(dat);
 			psiTurk.recordTrialData(dat);
-			database.push(dat);
+			dbstudy.push(dat);
 		}
 	};
 
@@ -297,7 +319,7 @@ var Test = function(stimuli) {
 				psiTurk.recordTrialData(dat);
 				dat.uniqueId = uniqueId;
 				dat.timestamp = wordon;
-				database.push(dat);
+				dbtest.push(dat);
 				remove_stim();
 				setTimeout(function(){ next(); }, 500);
 			});
@@ -345,7 +367,7 @@ var Questionnaire = function() {
 			psiTurk.recordUnstructuredData(this.id, this.value);
 			dat[this.id] = this.value;
 		});
-		database.push(dat);
+		dbpostq.push(dat);
 	};
 
 	prompt_resubmit = function() {
