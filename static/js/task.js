@@ -11,8 +11,8 @@ var mycondition = condition;  // these two variables are passed by the psiturk s
 var mycounterbalance = counterbalance;  // they tell you which condition you have been assigned to
 
 var condition_name = "";
-var num_words_studied = 22; // pilot used 18--now 22
-var list_repetitions = 3; // tried 4 in pilot, and 8/18 Ss were at ceiling (!)
+var num_words_studied = 18; // pilot used 18--now 22
+var list_repetitions = 3; // tried 4 in pilot
 var time_per_stimulus = 2500; //3000;
 var total_time = num_words_studied*list_repetitions*(time_per_stimulus+500)/1000;
 console.log("study period duration: "+total_time); // now +500 ms
@@ -260,7 +260,9 @@ var Experiment = function() {
 var Test = function(stimuli) {
 	// shuffle the words and present each one along with all of the objects
 	// prompt them: "Choose the best object for"  (later: try choosing top two or three? or choose until correct?)
+	stimuli = _.shuffle(stimuli); // shuffle...again
 	var all_objs = stimuli.slice(0);
+	all_objs = _.shuffle(all_objs); // and shuffle the object array
 
 	var finish = function() {
 	    //$("body").unbind("keydown", response_handler); // Unbind keys
