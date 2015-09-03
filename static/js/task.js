@@ -11,13 +11,12 @@ var mycondition = condition;  // these two variables are passed by the psiturk s
 var mycounterbalance = counterbalance;  // they tell you which condition you have been assigned to
 
 var condition_name = "";
-var num_words_studied = 18;
-var list_repetitions = 4;
+var num_words_studied = 22; // pilot used 18--now 22
+var list_repetitions = 3; // tried 4 in pilot, and 8/18 Ss were at ceiling (!)
 var time_per_stimulus = 2500; //3000;
 var total_time = num_words_studied*list_repetitions*(time_per_stimulus+500)/1000;
 console.log("study period duration: "+total_time); // now +500 ms
-// 3s per item +500ms ISI (uh oh--same in 1/trial and 2/trial cond) = ~3:50 (252s = 4.2min in theory..)
-// 2.5s should take 216 (3.6 min - 3:36
+// 2.5s per item + 500ms ISI per item should take 216 (3.6 min - 3:36) for 18 items
 
 var IMG_DIR = "static/images/objects/";
 var IMAGE_FILES = [];
