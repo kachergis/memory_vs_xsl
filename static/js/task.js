@@ -290,12 +290,12 @@ var Test = function(stimuli) {
 
     	var objs = d3.select("#visual_stim").append("svg")
 			.attr({
-				width: 1024,
-				height: 630
+				width: 900,
+				height: 620
 			})
 			.attr("id", "objArray")
 			.append("g")
-			.attr("transform", "translate(25,15)");
+			.attr("transform", "translate(30,0)");
 
 		var rect = objs.selectAll(".rect")
 			.data(rectGrid(all_objs));
